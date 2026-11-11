@@ -1,0 +1,42 @@
+
+# Semantic Propositional Logic
+
+def implication(A, B):
+    return (not A) or B
+
+def biconditional(A, B):
+    return A == B
+
+def evaluate_KB(P, Q, R):
+
+    s1 = implication(Q, P)       # Q -> P
+    s2 = implication(P, not Q)   # P -> ~Q
+    s3 = Q or R                  # Q OR R
+
+    KB = s1 and s2 and s3
+
+    return s1, s2, s3, KB
+
+
+def value(x):
+    return 'T' if x else 'F'
+
+
+print("SEMANTIC PROPOSITIONAL LOGIC")
+print("-----------------------------------------------")
+print("P Q R | Q->P | P->~Q | Q V R | KB")
+print("-----------------------------------------------")
+
+for P in [True, False]:
+    for Q in [True, False]:
+        for R in [True, False]:
+
+            s1, s2, s3, KB = evaluate_KB(P, Q, R)
+
+            print(value(P), value(Q), value(R), "|",
+                  value(s1), "  |",
+                  value(s2), "   |",
+                  value(s3), "  |",
+                  value(KB))
+
+print("-----------------------------------------------")
