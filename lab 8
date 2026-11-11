@@ -1,0 +1,52 @@
+
+def forward_reasoning(facts, rules, goal):
+
+    kb = set(facts)
+
+    print("\nInitial Knowledge Base:", kb)
+    print("Goal:", goal)
+
+    while True:
+
+        new_fact_found = False
+
+        for premises, conclusion in rules:
+
+            # Check whether all premises are present
+            if all(p in kb for p in premises):
+
+                if conclusion not in kb:
+
+                    print("\nRule Applied:", premises, "->", conclusion)
+
+                    kb.add(conclusion)
+                    print("New Fact Derived:", conclusion)
+
+                    new_fact_found = True
+
+                    # Check whether goal is reached
+                    if conclusion == goal:
+                        print("\nGoal Reached!")
+                        return True
+
+        if not new_fact_found:
+            break
+
+    print("\nGoal Cannot Be Reached!")
+    return False
+
+
+# Initial facts
+facts = ["Human(Socrates)"]
+
+# Inference rules
+rules = [
+    (["Human(Socrates)"], "Mortal(Socrates)"),
+    (["Mortal(Socrates)"], "NeedsFood(Socrates)")
+]
+
+# Goal
+goal = "NeedsFood(Socrates)"
+
+# Execute algorithm
+forward_reasoning(facts, rules, goal)
