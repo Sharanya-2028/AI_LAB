@@ -1,0 +1,106 @@
+
+# Truth Table Enumeration Algorithm
+
+def PL_TRUE_KB(model):
+
+    P = model['P']
+    Q = model['Q']
+    R = model['R']
+
+    s1 = (not Q) or P
+    s2 = (not P) or (not Q)
+    s3 = Q or R
+
+    return s1 and s2 and s3
+
+
+def PL_TRUE_QUERY(query, model):
+
+    P = model['P']
+    Q = model['Q']
+    R = model['R']
+
+    if query == "R":
+        return R
+
+    elif query == "R -> P":
+        return (not R) or P
+
+    elif query == "Q -> R":
+        return (not Q) or R
+
+
+# Algorithm 1: TT-ENTAILS
+def TT_ENTAILS(KB, alpha):
+
+    symbols = ['P', 'Q', 'R']
+
+    return TT_CHECK_ALL(KB, alpha, symbols, {})
+
+
+# Algorithm 2: TT-CHECK-ALL
+def TT_CHECK_ALL(KB, alpha, symbols, model):
+
+    if len(symbols) == 0:
+
+        if PL_TRUE_KB(model):
+            return PL_TRUE_QUERY(alpha, model)
+
+        else:
+            return True
+
+    P = symbols[0]
+    rest = symbols[1:]
+
+    model_true = model.copy()
+    model_true[P] = True
+
+    model_false = model.copy()
+    model_false[P] = False
+
+    return (TT_CHECK_ALL(KB, alpha, rest, model_true)
+            and
+            TT_CHECK_ALL(KB, alpha, rest, model_false))
+
+
+# Display Truth Table
+def value(x):
+    return 'T' if x else 'F'
+
+
+print("TRUTH TABLE")
+print("-----------------------------------------------")
+print("P Q R | Q->P | P->~Q | Q V R | KB")
+print("-----------------------------------------------")
+
+for P in [True, False]:
+    for Q in [True, False]:
+        for R in [True, False]:
+
+            model = {'P': P, 'Q': Q, 'R': R}
+
+            s1 = (not Q) or P
+            s2 = (not P) or (not Q)
+            s3 = Q or R
+
+            KB_value = PL_TRUE_KB(model)
+
+            print(value(P), value(Q), value(R), "|",
+                  value(s1), "  |",
+                  value(s2), "   |",
+                  value(s3), "  |",
+                  value(KB_value))
+
+
+# Check entailment
+queries = ["R", "R -> P", "Q -> R"]
+
+print("\nENTAILMENT RESULTS")
+print("-----------------------------------------------")
+
+for query in queries:
+
+    result = TT_ENTAILS("KB", query)
+
+    print("KB entails", query, ":",
+          "TRUE" if result else "FALSE")
