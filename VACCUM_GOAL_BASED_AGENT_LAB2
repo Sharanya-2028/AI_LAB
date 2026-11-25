@@ -1,0 +1,69 @@
+
+# Goal-Based Vacuum Cleaner Agent
+
+# Initial environment
+environment = {
+    'A': 'Dirty',
+    'B': 'Dirty'
+}
+
+# Initial location
+location = 'A'
+
+# Goal: Both rooms must be clean
+goal = {
+    'A': 'Clean',
+    'B': 'Clean'
+}
+
+def goal_based_agent(location, environment):
+
+    # Check whether the goal is achieved
+    if environment == goal:
+        return location, 'Goal Achieved'
+
+    # Check current room
+    if environment[location] == 'Dirty':
+
+        print("Room", location, "is Dirty")
+        print("Action: Suck")
+
+        environment[location] = 'Clean'
+
+    else:
+
+        # Move towards the room that is still dirty
+        if location == 'A' and environment['B'] == 'Dirty':
+
+            print("Room A is Clean")
+            print("Action: Move Right")
+            location = 'B'
+
+        elif location == 'B' and environment['A'] == 'Dirty':
+
+            print("Room B is Clean")
+            print("Action: Move Left")
+            location = 'A'
+
+        else:
+            return location, 'Goal Achieved'
+
+    return location, 'Continue'
+
+
+# Execute agent
+step = 1
+
+while True:
+
+    print("\nStep", step)
+
+    location, status = goal_based_agent(location, environment)
+
+    print("Environment:", environment)
+
+    if status == 'Goal Achieved':
+        print("\nGoal Achieved! Both rooms are clean.")
+        break
+
+    step += 1
