@@ -1,0 +1,119 @@
+
+# CNF Conversion
+
+def eliminate_iff(expr):
+    if not isinstance(expr, tuple):
+        return expr
+
+    op = expr[0]
+
+    if op == 'iff':
+        a = eliminate_iff(expr[1])
+        b = eliminate_iff(expr[2])
+        return ('&', ('|', ('~', a), b),
+                    ('|', ('~', b), a))
+
+    return (op,) + tuple(eliminate_iff(x) for x in expr[1:])
+
+
+def eliminate_implication(expr):
+    if not isinstance(expr, tuple):
+        return expr
+
+    op = expr[0]
+
+    if op == '>>':
+        a = eliminate_implication(expr[1])
+        b = eliminate_implication(expr[2])
+        return ('|', ('~', a), b)
+
+    return (op,) + tuple(eliminate_implication(x) for x in expr[1:])
+
+
+def move_negation(expr):
+    if not isinstance(expr, tuple):
+        return expr
+
+    op = expr[0]
+
+    if op == '~':
+        a = expr[1]
+
+        if not isinstance(a, tuple):
+            return expr
+
+        if a[0] == '~':
+            return move_negation(a[1])
+
+        if a[0] == '&':
+            return ('|', move_negation(('~', a[1])),
+                        move_negation(('~', a[2])))
+
+        if a[0] == '|':
+            return ('&', move_negation(('~', a[1])),
+                        move_negation(('~', a[2])))
+
+    return (op,) + tuple(move_negation(x) for x in expr[1:])
+
+
+def distribute(expr):
+    if not isinstance(expr, tuple):
+        return expr
+
+    op = expr[0]
+
+    if op == '|':
+        a = distribute(expr[1])
+        b = distribute(expr[2])
+
+        if isinstance(a, tuple) and a[0] == '&':
+            return ('&',
+                    distribute(('|', a[1], b)),
+                    distribute(('|', a[2], b)))
+
+        if isinstance(b, tuple) and b[0] == '&':
+            return ('&',
+                    distribute(('|', a, b[1])),
+                    distribute(('|', a, b[2])))
+
+        return ('|', a, b)
+
+    return (op,) + tuple(distribute(x) for x in expr[1:])
+
+
+def to_cnf(expr):
+    expr = eliminate_iff(expr)
+    expr = eliminate_implication(expr)
+    expr = move_negation(expr)
+    expr = distribute(expr)
+    return expr
+
+
+# Display expression
+
+def display(expr):
+    if not isinstance(expr, tuple):
+        return str(expr)
+
+    op = expr[0]
+
+    if op == '~':
+        return "¬" + display(expr[1])
+
+    symbols = {
+        '&': ' AND ',
+        '|': ' OR ',
+        '>>': ' -> ',
+        'iff': ' <-> '
+    }
+
+    return "(" + display(expr[1]) + symbols[op] + display(expr[2]) + ")"
+
+# Example: A -> (B AND C)
+
+expression = ('>>', 'A', ('&', 'B', 'C'))
+
+result = to_cnf(expression)
+
+print("Original Expression:", display(expression))
+print("CNF Expression:", display(result))
