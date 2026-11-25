@@ -1,0 +1,54 @@
+
+# Iterative Deepening Search
+
+def depth_limited_search(state, depth, path, visited):
+
+    if state == GOAL:
+        return path
+
+    if depth == 0:
+        return None
+
+    for next_state in get_neighbors(state):
+
+        if next_state not in visited:
+
+            result = depth_limited_search(
+                next_state,
+                depth - 1,
+                path + [next_state],
+                visited | {next_state}
+            )
+
+            if result is not None:
+                return result
+
+    return None
+
+
+def IDS(start):
+
+    depth = 0
+
+    while True:
+
+        print("Depth Limit:", depth)
+
+        result = depth_limited_search(
+            start, depth, [start], {start}
+        )
+
+        if result is not None:
+            return result
+
+        depth += 1
+
+
+# Main
+solution = IDS(START)
+
+print("\nSolution found using IDS:")
+for state in solution:
+    display(state)
+
+print("Total moves:", len(solution) - 1)
