@@ -1,0 +1,43 @@
+
+# Simple Reflex Vacuum Cleaner Agent
+
+# Initial environment
+environment = {
+    'A': 'Dirty',
+    'B': 'Dirty'
+}
+
+# Initial position
+location = 'A'
+
+def vacuum_agent(location, environment):
+
+    if environment[location] == 'Dirty':
+        print("Room", location, "is Dirty")
+        print("Action: Suck")
+        environment[location] = 'Clean'
+
+    else:
+        print("Room", location, "is Clean")
+
+        if location == 'A':
+            print("Action: Move Right")
+            location = 'B'
+
+        elif location == 'B':
+            print("Action: Move Left")
+            location = 'A'
+
+    return location
+
+
+# Run the agent
+for i in range(4):
+
+    print("\nStep", i + 1)
+
+    location = vacuum_agent(location, environment)
+
+    print("Environment:", environment)
+
+print("\nFinal Environment:", environment)
