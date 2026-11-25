@@ -1,0 +1,69 @@
+
+# Model-Based Vacuum Cleaner Agent
+
+# Actual environment
+environment = {
+    'A': 'Dirty',
+    'B': 'Dirty'
+}
+
+# Internal state (memory of the agent)
+model = {
+    'A': 'Unknown',
+    'B': 'Unknown'
+}
+
+# Initial location
+location = 'A'
+
+
+def vacuum_agent(location, environment, model):
+
+    # Observe the current room
+    percept = environment[location]
+
+    # Update internal model
+    model[location] = percept
+
+    print("Current Location:", location)
+    print("Percept:", percept)
+
+    # Check current room
+    if percept == 'Dirty':
+
+        print("Action: SUCK")
+        environment[location] = 'Clean'
+        model[location] = 'Clean'
+
+    # If current room is clean, move to unknown or dirty room
+    elif model['A'] != 'Clean':
+
+        print("Action: MOVE LEFT")
+        location = 'A'
+
+    elif model['B'] != 'Clean':
+
+        print("Action: MOVE RIGHT")
+        location = 'B'
+
+    else:
+        print("Goal Achieved! Both rooms are clean.")
+
+    return location
+
+
+# Run the agent
+step = 1
+
+while model['A'] != 'Clean' or model['B'] != 'Clean':
+
+    print("\nStep", step)
+
+    location = vacuum_agent(location, environment, model)
+
+    print("Internal Model:", model)
+
+    step += 1
+
+print("\nFinal Environment:", environment)
+print("Final Model:", model)
