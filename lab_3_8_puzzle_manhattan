@@ -1,0 +1,93 @@
+
+# Manhattan Distance
+
+def manhattan(state):
+
+    distance = 0
+
+    for i in range(9):
+
+        tile = state[i]
+
+        if tile != 0:
+
+            # Current position
+            row = i // 3
+            col = i % 3
+
+            # Goal position
+            goal_row = (tile - 1) // 3
+            goal_col = (tile - 1) % 3
+
+            distance += abs(row - goal_row)
+            distance += abs(col - goal_col)
+
+    return distance
+
+
+# A* Search Algorithm
+
+def A_star(start):
+
+    pq = []
+    tie = count()
+
+    # (f, tie breaker, g, state)
+    heappush(pq, (manhattan(start), next(tie), 0, start))
+
+    parent = {start: None}
+    g_cost = {start: 0}
+
+    while pq:
+
+        f, _, g, current = heappop(pq)
+
+        # Skip outdated queue entries
+        if g != g_cost[current]:
+            continue
+
+        # Goal test
+        if current == GOAL:
+
+            path = []
+            state = current
+
+            while state is not None:
+                path.append(state)
+                state = parent[state]
+
+            return path[::-1]
+
+        # Explore neighboring states
+        for next_state in get_neighbors(current):
+
+            new_g = g + 1
+
+            if new_g < g_cost.get(next_state, float('inf')):
+
+                g_cost[next_state] = new_g
+                parent[next_state] = current
+
+                h = manhattan(next_state)
+                new_f = new_g + h
+
+                heappush(
+                    pq,
+                    (new_f, next(tie), new_g, next_state)
+                )
+
+    return None
+
+
+# Main
+solution = A_star(START)
+
+print("Solution using A* with Manhattan Distance:")
+
+if solution:
+    for state in solution:
+        display(state)
+
+    print("Total moves:", len(solution) - 1)
+else:
+    print("No solution found")
